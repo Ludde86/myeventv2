@@ -1,7 +1,9 @@
 package springbootstarter.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import springbootstarter.model.Event;
+import springbootstarter.repository.EventRepository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,36 +12,30 @@ import java.util.List;
 @Service
 public class EventService {
 
-    List<Event> events = new ArrayList<>(Arrays.asList(
-            new Event("1", "Fullmoon", "Ludvig"),
-            new Event("2", "Solar Eclipse", "Ludvig"),
-            new Event("3", "My birthday", "Ludvig")
-    ));
+    @Autowired
+    private EventRepository eventRepository;
 
     public List<Event> getEvents() {
+        List<Event> events = new ArrayList<>();
+        eventRepository.findAll().forEach(events::add);
         return events;
     }
 
     public Event getEvent(String id) {
-        return events.stream().filter(e -> e.getId().equals(id)).findFirst().get();
+        return eventRepository.findById(id).orElse(null);
     }
 
     public void addEvent(Event event) {
-        events.add(event);
+        eventRepository.save(event);
     }
 
     public void updateEvent(String id, Event event) {
 
-        for(int i = 0; i < events.size(); i++) {
-            Event e = events.get(i);
-            if(e.getId().equals(id)) {
-                events.set(i, event);
-                return;
-            }
-        }
+        eventRepository.save(event);
+
     }
 
     public void deleteEvent(String id) {
-        events.removeIf(e -> e.getId().equals(id));
+        eventRepository.deleteById(id);
     }
 }
